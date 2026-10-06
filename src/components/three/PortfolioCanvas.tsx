@@ -6,8 +6,10 @@ import type { RefObject } from "react";
 import { SCENES, type SceneId } from "@/src/config/scenes";
 import CameraRig from "./CameraRig";
 import DeveloperRoom from "./DeveloperRoom";
+import type { SkillKeyAssignment } from "@/src/config/keyboard";
+import type { Skill } from "@/src/lib/portfolio/portfolio.types";
 
-export default function PortfolioCanvas({ progress, activeScene }: { progress: RefObject<number>; activeScene: SceneId }) {
+export default function PortfolioCanvas({ progress, activeScene, assignments, selectedSkillId, interactive, onHoverSkill, onSelectSkill }: { progress: RefObject<number>; activeScene: SceneId; assignments: readonly SkillKeyAssignment[]; selectedSkillId: string | null; interactive: boolean; onHoverSkill: (skill: Skill | null) => void; onSelectSkill: (id: string) => void }) {
   const [reduceMotion, setReduceMotion] = useState(false);
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -29,7 +31,7 @@ export default function PortfolioCanvas({ progress, activeScene }: { progress: R
     <ambientLight intensity={1.5} />
     <hemisphereLight args={["#9fd4e4", "#162636", 1.7]} />
     <directionalLight position={[4, 7, 5]} intensity={2.2} />
-    <DeveloperRoom animate={!reduceMotion} />
+    <DeveloperRoom animate={!reduceMotion} assignments={assignments} selectedSkillId={selectedSkillId} interactive={interactive} onHoverSkill={onHoverSkill} onSelectSkill={onSelectSkill} />
     <CameraRig progress={progress} activeScene={activeScene} reduceMotion={reduceMotion} />
   </Canvas>;
 }

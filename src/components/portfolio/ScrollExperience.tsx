@@ -3,11 +3,14 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SCENES, sceneAt, type SceneId } from "@/src/config/scenes";
 import SceneStage from "@/src/components/three/SceneStage";
+import type { Skill } from "@/src/lib/portfolio/portfolio.types";
+import { SkillSelectionContext } from "./SkillSelectionContext";
 
-export default function ScrollExperience({ children, hasContent }: { children: ReactNode; hasContent: boolean }) {
+export default function ScrollExperience({ children, hasContent, skills }: { children: ReactNode; hasContent: boolean; skills: Skill[] }) {
   const progress = useRef(0);
   const [activeScene, setActiveScene] = useState<SceneId>("hero");
   const [sceneAvailable, setSceneAvailable] = useState(true);
+  const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!hasContent) return;
@@ -46,7 +49,7 @@ export default function ScrollExperience({ children, hasContent }: { children: R
     };
   }, [hasContent]);
 
-  return <>
+  return <SkillSelectionContext.Provider value={{ selectedSkillId, setSelectedSkillId }}>
     <nav aria-label="Điều hướng nội dung" className="flex flex-wrap gap-x-5 gap-y-2 border-b border-slate-700 py-5 text-sm">
       {(hasContent ? SCENES : SCENES.slice(0, 1)).map((scene) => <span key={scene.id} className="contents">
         <a href={`#${scene.id}`}
@@ -58,10 +61,10 @@ export default function ScrollExperience({ children, hasContent }: { children: R
       </span>)}
     </nav>
     <div data-active-scene={activeScene} className={sceneAvailable ? "lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start lg:gap-10" : "mx-auto max-w-3xl"}>
-      {sceneAvailable && <aside className="pointer-events-none sticky top-0 z-20 h-[38vh] min-h-72 self-start pt-4 lg:top-6 lg:h-[min(82vh,42rem)] lg:pt-0">
-        <SceneStage progress={progress} activeScene={activeScene} onUnavailable={() => setSceneAvailable(false)} />
+      {sceneAvailable && <aside className={`${activeScene === "skills" && skills.length ? "pointer-events-auto" : "pointer-events-none"} sticky top-0 z-20 h-[38vh] min-h-72 self-start pt-4 lg:top-6 lg:h-[min(82vh,42rem)] lg:pt-0`}>
+        <SceneStage progress={progress} activeScene={activeScene} skills={skills} onUnavailable={() => setSceneAvailable(false)} />
       </aside>}
       <div className="relative z-10 min-w-0">{children}</div>
     </div>
-  </>;
+  </SkillSelectionContext.Provider>;
 }

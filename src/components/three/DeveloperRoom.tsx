@@ -1,8 +1,11 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { Quaternion, Vector3, type Group } from "three";
+import type { SkillKeyAssignment } from "@/src/config/keyboard";
+import type { Skill } from "@/src/lib/portfolio/portfolio.types";
+import Keyboard from "./Keyboard";
 
 const wall = "#1b2b3d";
 const steel = "#31465c";
@@ -147,26 +150,6 @@ function Developer({ animate }: { animate: boolean }) {
   </group>;
 }
 
-export const KEY_ROWS = [12, 12, 11, 10] as const;
-
-function Keyboard() {
-  return <group position={[0.4, -0.35, 0.54]}>
-    <mesh castShadow>
-      <boxGeometry args={[1.65, 0.085, 0.66]} />
-      <meshStandardMaterial color="#151e2b" metalness={0.35} roughness={0.5} />
-    </mesh>
-    {KEY_ROWS.flatMap((count, row) => Array.from({ length: count }, (_, col) => {
-      const spacing = 0.125;
-      const x = (col - (count - 1) / 2) * spacing;
-      const z = (row - 1.5) * 0.14;
-      return <mesh key={`${row}-${col}`} name={`Key_${row}_${col}`} position={[x, 0.075, z]} castShadow>
-        <boxGeometry args={[0.105, 0.055, 0.108]} />
-        <meshStandardMaterial color={(row + col) % 7 === 0 ? "#42b8aa" : "#d0d9dc"} roughness={0.5} />
-      </mesh>;
-    }))}
-  </group>;
-}
-
 function Mouse() {
   return <mesh position={[1.57, -0.33, 0.55]} scale={[0.13, 0.055, 0.22]} castShadow>
     <sphereGeometry args={[1, 12, 8]} />
@@ -174,12 +157,27 @@ function Mouse() {
   </mesh>;
 }
 
-export default function DeveloperRoom({ animate = true }: { animate?: boolean }) {
+const StaticWorkspace = memo(function StaticWorkspace({ animate }: { animate: boolean }) {
   return <group>
-    <Room /><Desk /><Chair /><Developer animate={animate} /><Monitor /><Keyboard /><Mouse />
+    <Room /><Desk /><Chair /><Developer animate={animate} /><Monitor /><Mouse />
     <mesh position={[2.35, -1.39, -2.5]}>
       <cylinderGeometry args={[0.28, 0.28, 0.22, 12]} />
       <meshStandardMaterial color="#4c6653" />
     </mesh>
+  </group>;
+});
+
+export default function DeveloperRoom({ animate = true, assignments, selectedSkillId, interactive, onHoverSkill, onSelectSkill }: {
+  animate?: boolean;
+  assignments: readonly SkillKeyAssignment[];
+  selectedSkillId: string | null;
+  interactive: boolean;
+  onHoverSkill: (skill: Skill | null) => void;
+  onSelectSkill: (id: string) => void;
+}) {
+  return <group>
+    <StaticWorkspace animate={animate} />
+    <Keyboard assignments={assignments} selectedSkillId={selectedSkillId} interactive={interactive} reduceMotion={!animate}
+      onHoverSkill={onHoverSkill} onSelectSkill={onSelectSkill} />
   </group>;
 }
