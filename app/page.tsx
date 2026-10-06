@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 import { getPortfolio } from "@/src/lib/portfolio/portfolio.service";
 import type { PortfolioData } from "@/src/lib/portfolio/portfolio.types";
+import SceneStage from "@/src/components/three/SceneStage";
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return <section id={id} className="space-y-5 border-t border-slate-700 py-12">
@@ -61,8 +62,10 @@ export default async function Home() {
   const result = await getPortfolio();
   return <main className="mx-auto max-w-5xl px-6 pb-16 text-slate-300 sm:px-10">
     <nav aria-label="Điều hướng nội dung" className="flex flex-wrap gap-4 border-b border-slate-700 py-5 text-sm">
-      <a href="#hero">Giới thiệu</a><a href="#education">Học vấn</a><a href="#experience">Kinh nghiệm</a><a href="#projects">Dự án</a><a href="#skills">Kỹ năng</a><a href="#contact">Liên hệ</a>
+      <a href="#hero">Giới thiệu</a>
+      {result.status === "ready" && <><a href="#education">Học vấn</a><a href="#experience">Kinh nghiệm</a><a href="#projects">Dự án</a><a href="#skills">Kỹ năng</a><a href="#contact">Liên hệ</a></>}
     </nav>
+    <div className="pt-8"><SceneStage /></div>
     {result.status === "ready" ? <Portfolio data={result.data} /> : <section id="hero" className="py-24">
       <h1 className="text-4xl font-semibold text-white">Developer portfolio</h1>
       <p className="mt-5 max-w-xl text-lg">{result.status === "empty" ? "Nội dung portfolio chưa được xuất bản." : "Nội dung portfolio tạm thời chưa khả dụng. Vui lòng quay lại sau."}</p>

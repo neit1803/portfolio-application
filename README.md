@@ -35,3 +35,7 @@ npm run build
 ## Dữ liệu Supabase (Phase 2)
 
 Chạy migration trong `supabase/migrations/`, tạo tài khoản chủ sở hữu và nhập CV theo [Supabase guide](docs/SUPABASE.md) và [Content guide](docs/CONTENT.md). Khi chưa có profile công khai hoặc Supabase chưa cấu hình, trang vẫn hiển thị trạng thái phù hợp. Ảnh dự án và PDF được lưu trong Supabase Storage; không dùng CV JSON/LaTeX.
+
+## Workspace 3D (Phase 3)
+
+Trang có một Canvas hiển thị room, desk, monitor, nhân vật và bàn phím procedural. Không cần file GLB để chạy. Danh sách asset và fallback nằm trong [Models guide](docs/MODELS.md). Nội dung HTML vẫn hiển thị khi WebGL không tải được.
