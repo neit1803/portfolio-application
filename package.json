@@ -7,7 +7,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/lib/portfolio/*.test.mjs"
+    "test": "node --test src/config/*.test.mjs src/lib/portfolio/*.test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
