@@ -2,7 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
-import type { Group } from "three";
+import { Quaternion, Vector3, type Group } from "three";
 
 const wall = "#1b2b3d";
 const steel = "#31465c";
@@ -90,15 +90,32 @@ function Chair() {
   </group>;
 }
 
-function Developer() {
-  const leftHand = useRef<Group>(null);
-  const rightHand = useRef<Group>(null);
+function Limb({ from, to, color, radius }: { from: [number, number, number]; to: [number, number, number]; color: string; radius: number }) {
+  const start = new Vector3(...from);
+  const end = new Vector3(...to);
+  const direction = end.clone().sub(start);
+  const midpoint = start.clone().add(end).multiplyScalar(0.5);
+  const rotation = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), direction.clone().normalize());
+  return <mesh position={midpoint} quaternion={rotation} castShadow>
+    <capsuleGeometry args={[radius, Math.max(0, direction.length() - radius * 2), 4, 8]} />
+    <meshStandardMaterial color={color} roughness={0.85} />
+  </mesh>;
+}
+
+function Developer({ animate }: { animate: boolean }) {
+  const leftForearm = useRef<Group>(null);
+  const rightForearm = useRef<Group>(null);
   const elapsed = useRef(0);
   useFrame((_, delta) => {
+    if (!animate) {
+      if (leftForearm.current) leftForearm.current.rotation.x = 0;
+      if (rightForearm.current) rightForearm.current.rotation.x = 0;
+      return;
+    }
     elapsed.current += delta;
-    const beat = Math.sin(elapsed.current * 6) * 0.035;
-    if (leftHand.current) leftHand.current.position.y = -0.23 + beat;
-    if (rightHand.current) rightHand.current.position.y = -0.23 - beat;
+    const beat = Math.sin(elapsed.current * 7) * 0.045;
+    if (leftForearm.current) leftForearm.current.rotation.x = beat;
+    if (rightForearm.current) rightForearm.current.rotation.x = -beat;
   });
   return <group position={[0.65, -0.15, -1.17]}>
     <mesh position={[0, 0.22, 0]} castShadow>
@@ -113,11 +130,15 @@ function Developer() {
       <sphereGeometry args={[0.252, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
       <meshStandardMaterial color="#18222e" />
     </mesh>
-    {[-0.37, 0.37].map((x, i) => <group key={x} ref={i === 0 ? leftHand : rightHand} position={[x, -0.23, 0.68]}>
-      <mesh rotation={[0.65, 0, i === 0 ? -0.12 : 0.12]} castShadow>
-        <capsuleGeometry args={[0.085, 0.48, 4, 8]} />
-        <meshStandardMaterial color="#b78e74" />
-      </mesh>
+    {[-0.35, 0.35].map((x, i) => <group key={x}>
+      <Limb from={[x * 0.8, 0.5, 0.08]} to={[x, 0.25, 0.64]} color="#54798b" radius={0.11} />
+      <group ref={i === 0 ? leftForearm : rightForearm} position={[x, 0.25, 0.64]}>
+        <Limb from={[0, 0, 0]} to={[0, -0.29, 0.8]} color="#b78e74" radius={0.08} />
+        <mesh position={[0, -0.29, 0.8]} castShadow>
+          <sphereGeometry args={[0.09, 10, 8]} />
+          <meshStandardMaterial color="#b78e74" roughness={0.85} />
+        </mesh>
+      </group>
     </group>)}
     {[-0.2, 0.2].map((x) => <mesh key={x} position={[x, -0.72, 0.34]} rotation={[1.25, 0, 0]} castShadow>
       <capsuleGeometry args={[0.13, 0.52, 4, 8]} />
@@ -153,9 +174,9 @@ function Mouse() {
   </mesh>;
 }
 
-export default function DeveloperRoom() {
+export default function DeveloperRoom({ animate = true }: { animate?: boolean }) {
   return <group>
-    <Room /><Desk /><Chair /><Developer /><Monitor /><Keyboard /><Mouse />
+    <Room /><Desk /><Chair /><Developer animate={animate} /><Monitor /><Keyboard /><Mouse />
     <mesh position={[2.35, -1.39, -2.5]}>
       <cylinderGeometry args={[0.28, 0.28, 0.22, 12]} />
       <meshStandardMaterial color="#4c6653" />

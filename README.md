@@ -39,3 +39,5 @@ Chạy migration trong `supabase/migrations/`, tạo tài khoản chủ sở h�
 ## Workspace 3D (Phase 3)
 
 Trang có một Canvas hiển thị room, desk, monitor, nhân vật và bàn phím procedural. Không cần file GLB để chạy. Danh sách asset và fallback nằm trong [Models guide](docs/MODELS.md). Nội dung HTML vẫn hiển thị khi WebGL không tải được.
+
+Khi thiết bị không hỗ trợ WebGL, scene được ẩn và nội dung HTML vẫn dùng được. Chế độ `prefers-reduced-motion` dừng hoạt ảnh gõ phím.
