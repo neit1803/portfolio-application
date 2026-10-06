@@ -16,6 +16,8 @@ Future model registry → GLB loader → GLB or procedural fallback → same R3F
 
 `app/page.tsx` tải portfolio trên server theo mỗi request, rồi truyền HTML đã render vào `ScrollExperience`. Repository đọc các bảng Supabase; mapper tạo `PortfolioData`. Giao diện không đọc trực tiếp hàng dữ liệu hay file CV JSON/LaTeX. Nếu DB lỗi/trống, trang vẫn có nội dung trạng thái; nếu WebGL lỗi, cột scene được bỏ và HTML chiếm chiều rộng phù hợp.
 
+Các component trong `src/components/portfolio/` nhận `PortfolioData` đã chuẩn hóa. Hero hiển thị tóm tắt học vấn, liên kết xã hội và resume nếu có; các phần còn lại dùng heading/list/link semantic. `ScrollExperience` chỉ đặt `data-active-scene`, còn CSS nhấn section tương ứng; không ẩn CV text theo tiến độ scroll.
+
 ## Scroll và camera
 
 `src/config/scenes.ts` là nơi duy nhất định nghĩa năm mốc `hero`, `experience`, `projects`, `skills`, `contact`, camera position và target. `education` nằm trong đoạn Hero. ScrollExperience dùng vị trí section trong DOM để tính progress liên tục từ 0 đến 1 và scene đang hoạt động. CameraRig nội suy position/target trong `useFrame`; nav dùng cùng active scene. Khi chọn giảm chuyển động, camera cắt sang scene gần nhất và Canvas chỉ render khi cần.

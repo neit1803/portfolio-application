@@ -57,7 +57,7 @@ export default function ScrollExperience({ children, hasContent }: { children: R
         {hasContent && scene.id === "hero" && <a href="#education" className="text-slate-300 hover:text-white">Học vấn</a>}
       </span>)}
     </nav>
-    <div className={sceneAvailable ? "lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start lg:gap-10" : "mx-auto max-w-3xl"}>
+    <div data-active-scene={activeScene} className={sceneAvailable ? "lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start lg:gap-10" : "mx-auto max-w-3xl"}>
       {sceneAvailable && <aside className="pointer-events-none sticky top-0 z-20 h-[38vh] min-h-72 self-start pt-4 lg:top-6 lg:h-[min(82vh,42rem)] lg:pt-0">
         <SceneStage progress={progress} activeScene={activeScene} onUnavailable={() => setSceneAvailable(false)} />
       </aside>}
